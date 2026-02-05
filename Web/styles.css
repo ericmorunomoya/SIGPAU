@@ -1,0 +1,448 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Fuente más moderna */
+    background-color: #f0f2f5; /* Fondo más suave */
+    scroll-behavior: smooth;
+    color: #333;
+}
+
+/* Importar Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0.8) !important; /* Navbar semi-transparente */
+    transition: background-color 0.3s ease;
+}
+
+.navbar-brand {
+    font-weight: 700; /* Más audaz */
+    color: #00bfff !important; /* Color distintivo */
+    font-size: 1.8rem;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #00bfff !important;
+}
+
+.hero {
+    height: 100vh;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.6); /* Oscurecer más el overlay */
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero p.lead {
+    font-size: 1.75rem;
+    font-weight: 300;
+}
+
+.btn-primary {
+    background-color: #00bfff; /* Color primario consistente */
+    border-color: #00bfff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #009acd;
+    border-color: #009acd;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 191, 255, 0.3);
+}
+
+.btn-outline-primary {
+    color: #00bfff;
+    border-color: #00bfff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #00bfff;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 191, 255, 0.3);
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #001122 0%, #003366 100%);
+    color: white;
+}
+
+/* Secciones */
+section {
+    padding: 80px 0;
+}
+
+section h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #222;
+}
+
+section p.lead {
+    font-size: 1.25rem;
+    color: #555;
+}
+
+/* Cards de Servicios */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #00bfff;
+}
+
+.card-text {
+    color: #666;
+}
+
+/* Portafolio */
+.portfolio-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.portfolio-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.portfolio-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    text-align: center;
+    padding: 20px;
+}
+
+.portfolio-item:hover .portfolio-overlay {
+    opacity: 1;
+}
+
+.portfolio-item:hover img {
+    transform: scale(1.1);
+}
+
+.portfolio-overlay h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.portfolio-overlay p {
+    font-size: 1rem;
+}
+
+/* Footer */
+footer {
+    background-color: #222 !important;
+    padding: 40px 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.social-icons a {
+    font-size: 1.5rem;
+    margin: 0 10px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #00bfff;
+}
+
+/* Animaciones */
+.animate__animated {
+    visibility: hidden;
+}
+
+.animate__animated.visible {
+    visibility: visible;
+}
+
+/* Efectos de Hover */
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale:hover {
+    transform: scale(1.03);
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 3rem;
+    }
+    .hero p.lead {
+        font-size: 1.2rem;
+    }
+    section h2 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    .hero p.lead {
+        font-size: 1rem;
+    }
+    section h2 {
+        font-size: 2rem;
+    }
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+}
+
+
+
+/* Estilos específicos para SIGPAU */
+.feature-box {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    border-left: 5px solid #00bfff;
+    transition: all 0.3s ease;
+}
+
+.feature-box:hover {
+    transform: translateX(10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    display: inline-block;
+}
+
+.impact-box {
+    border-left: 3px solid #00bfff;
+}
+
+.impact-box h5 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.impact-box ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.stats-card {
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stats-icon {
+    display: inline-block;
+}
+
+.comparison-item {
+    transition: all 0.3s ease;
+}
+
+.comparison-item:hover {
+    background-color: #f8f9fa;
+    padding-left: 10px;
+    border-radius: 5px;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, #00bfff, #003366);
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 50px;
+    width: 50%;
+    padding: 0 40px;
+}
+
+.timeline-item:nth-child(odd) {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item:nth-child(even) {
+    left: 50%;
+    text-align: left;
+}
+
+.timeline-marker {
+    position: absolute;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-item:nth-child(odd) .timeline-marker {
+    right: -15px;
+}
+
+.timeline-item:nth-child(even) .timeline-marker {
+    left: -15px;
+}
+
+.timeline-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
+}
+
+.timeline-content h4 {
+    color: #00bfff;
+    margin-bottom: 10px;
+}
+
+/* Responsive Timeline */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        left: 0 !important;
+        text-align: left !important;
+        padding-left: 60px;
+        padding-right: 20px;
+    }
+
+    .timeline-marker {
+        left: 5px !important;
+        right: auto !important;
+    }
+}
+
+/* Badges personalizados */
+.badge {
+    font-size: 1rem;
+    padding: 8px 15px;
+    font-weight: 600;
+}
+
+/* Mejoras visuales para listas */
+.feature-box ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.feature-box ul li {
+    padding-left: 25px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.feature-box ul li::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: #00bfff;
+}
+
+/* Botón Light mejorado */
+.btn-light {
+    background-color: white;
+    border-color: white;
+    color: #00bfff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+    color: #009acd;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.3);
+}
+
