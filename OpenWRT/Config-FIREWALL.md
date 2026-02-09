@@ -147,48 +147,48 @@ config rule
 	option proto 'tcp'
 	option dest_port '80'
 	option name 'ADMIN'
+	option src '*'
 
 config rule
 	option target 'ACCEPT'
 	option dest_port '22'
 	option name 'SSH'
 	option src '*'
+	option proto 'tcp udp'
 
 config rule
+	option target 'ACCEPT'
 	option proto 'tcp'
 	option dest_port '22'
+	option src '*'
 	option dest_ip '10.120.22.207'
 	option name 'sshlan20'
 	option dest 'LAN20'
 
+config rule
+	option target 'ACCEPT'
 	option proto 'tcp'
 	option dest_port '22'
 	option name 'sshlan10'
 	option dest '*'
 	option dest_ip '10.120.17.242'
+
+config rule
 	option target 'ACCEPT'
 	option dest_port '389'
 	option name 'Ldap'
 	option src '*'
+	option dest_ip '10.120.17.242'
 	option proto 'tcp'
 	option dest '*'
+
 config rule
 	option enabled '1'
 	option target 'ACCEPT'
+	option dest_port '389'
 	option name 'ldap2'
-
 	option src '*'
-	option dest 'LAN20'
 	option dest_ip '10.120.22.207'
 	option proto 'tcp'
-	option dest_port '389'
-
-	option dest_ip '10.120.17.242'
-
-config rule
-config rule
-	option target 'ACCEPT'
-	option src '*'
-	option target 'ACCEPT'
-	option proto 'tcp udp'
+	option dest 'LAN20'
 
