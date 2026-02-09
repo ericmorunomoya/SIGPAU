@@ -1,0 +1,8 @@
+dn: sambaDomainName=SIGPAU,dc=sigpau,dc=local
+objectClass: sambaDomain
+objectClass: sambaUnixIdPool
+sambaDomainName: SIGPAU
+sambaSID: S-1-5-21-2073654420-341171532-3717625553
+sambaAlgorithmicRidBase: 1000
+uidNumber: 10000
+gidNumber: 10000
