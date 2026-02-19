@@ -1,0 +1,10 @@
+# Ajustes de rendimiento para OpenLDAP (ejemplo)
+# Estos valores pueden necesitar ser ajustados según la carga del servidor.
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcDbCacheSize
+olcDbCacheSize: 10000
+-
+add: olcDbCheckpoint
+olcDbCheckpoint: 512 30
