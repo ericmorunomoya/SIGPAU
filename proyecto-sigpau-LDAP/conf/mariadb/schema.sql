@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS sigpau_mgmt;
+USE sigpau_mgmt;
+
+CREATE TABLE IF NOT EXISTS backup_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATETIME,
+    archivo VARCHAR(255),
+    destino VARCHAR(50),
+    estado VARCHAR(20)
+);
+
+GRANT ALL PRIVILEGES ON sigpau_mgmt.* TO 'admin01'@'10.120.17.242' IDENTIFIED BY 'Sigpau2026*';
+FLUSH PRIVILEGES;
