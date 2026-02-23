@@ -1,49 +1,75 @@
 #!/bin/bash
 
 # -----------------------------
-# Configuración
+# Configuración del bot (RECUERDA USAR UN TOKEN NUEVO)
 # -----------------------------
-TOKEN="8509333409:AAGQEv_Q2P7L2H_BJw5iFDYxOYkll9iiX1A"           # Reemplaza con tu token nuevo
-CHAT_ID="835463082"       # Reemplaza con tu chat ID fijo o usa {ALERT.SENDTO}
-LOG_FILE="/tmp/telegram_alerts.log"  # Para registrar fallos
+TOKEN="7754937907:AAEmXOHagArEXAh163TZ8QlxJvUJLeKP1J8"
+CHAT_ID="835463082"
+LOG_FILE="/tmp/telegram_alerts.log"
+HOSTNAME=$(hostname)  # Capturamos el nombre de la máquina
 
 # -----------------------------
-# Parámetros del script
+# Lista de servicios críticos
 # -----------------------------
-SUBJECT="$1"
-MESSAGE="$2"
-SEVERITY="$3"   # Opcional, se puede pasar desde Zabbix
+SERVICES=(
+    "php7.4-fpm"
+    "mariadb"
+    "smbd"
+    "slapd"
+    "apache2"
+    "nginx"
+    "zabbix-server"
+    "ssh"
+)
+
+# Emojis para el estado
+UP="✅"
+DOWN="❌"
 
 # -----------------------------
-# Emojis según severidad
+# Construir mensaje con el Hostname
 # -----------------------------
-case "$SEVERITY" in
-  "Disaster") EMOJI="🔴" ;;
-  "High")     EMOJI="🟠" ;;
-  "Average")  EMOJI="🟡" ;;
-  "Warning")  EMOJI="🟢" ;;
-  "Information") EMOJI="ℹ️" ;;
-  *) EMOJI="📌" ;;
-esac
+STATUS_MSG="🖥️ Estado de servicios importantes
+📍 Servidor: $HOSTNAME
+----------------------------
+"
+
+CRITICAL=0  # Contador de servicios caídos
+
+for svc in "${SERVICES[@]}"; do
+    if systemctl is-active --quiet "$svc"; then
+        STATUS_MSG+="$UP $svc
+"
+    else
+        STATUS_MSG+="$DOWN $svc
+"
+        ((CRITICAL++))
+    fi
+done
+
+# Determinar severidad
+if [ $CRITICAL -eq 0 ]; then
+    SEVERITY="Information"
+else
+    SEVERITY="High"
+fi
 
 # -----------------------------
-# Preparar mensaje con Markdown
+# Enviar mensaje a Telegram
 # -----------------------------
-TEXT="$EMOJI *${SUBJECT}*
-${MESSAGE}"
+TEXT="$STATUS_MSG"
 
-URL="https://api.telegram.org/bot$TOKEN/sendMessage"
-
-# -----------------------------
-# Enviar mensaje
-# -----------------------------
-RESPONSE=$(curl -s -X POST "$URL" \
-  --data-urlencode "chat_id=$CHAT_ID" \
-  --data-urlencode "text=$TEXT" \
-  -o /tmp/telegram_curl.log -w "%{http_code}")
+RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+    --data-urlencode "chat_id=$CHAT_ID" \
+    --data-urlencode "text=$TEXT" \
+    -o /tmp/telegram_curl.log -w "%{http_code}")
 
 # -----------------------------
-# Registro de errores
+# Registrar errores si falla
+# -----------------------------
+if [ "$RESPONSE" != "200" ]; then
+    echo "$(date) - ERROR al enviar Telegram: HTTP $RESPONSE" >> "$LOG_FILE"
+fi
 # -----------------------------
 if [ "$RESPONSE" != "200" ]; then
   echo "$(date) - ERROR al enviar Telegram: HTTP $RESPONSE" >> "$LOG_FILE"
