@@ -1,0 +1,14 @@
+dn: uid=lautaro,ou=people,dc=sigpau,dc=local
+changetype: modify
+replace: homeDirectory
+homeDirectory: /home/ldap-users/lautaro
+
+dn: uid=jmota,ou=people,dc=sigpau,dc=local
+changetype: modify
+replace: homeDirectory
+homeDirectory: /home/ldap-users/jmota
+
+dn: uid=pmoto,ou=people,dc=sigpau,dc=local
+changetype: modify
+replace: homeDirectory
+homeDirectory: /home/ldap-users/pmoto

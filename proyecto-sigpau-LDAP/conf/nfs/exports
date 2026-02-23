@@ -1,0 +1,2 @@
+/home/ldap-users 10.120.17.0/24(rw,sync,no_subtree_check,no_root_squash)
+/home/ldap-users 10.120.22.0/24(rw,sync,no_subtree_check,no_root_squash)

@@ -1,0 +1,1 @@
+* -fstype=nfs,rw,soft,intr,rsize=8192,wsize=8192 10.120.17.242:/home/ldap-users/& 10.120.22.207:/home/ldap-users/&
