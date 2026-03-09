@@ -18,7 +18,7 @@ El proyecto SIGPAU se distingue por las siguientes características fundamentale
 
 - **Alertas en Tiempo Real:** Notificaciones instantáneas y dashboards interactivos para una supervisión proactiva.
 
-## Servicios Ofrecidos
+## Servicios Ofrecidos.
 
 SIGPAU proporciona un conjunto de servicios clave para una infraestructura de TI completa y segura:
 
