@@ -55,4 +55,4 @@ Este panel está diseñado para correr como un proceso resiliente en el Servidor
    Abre un navegador web y entra a `http://10.120.17.242:8080`.
 
 ---
-*Diseñado y Desarrollado por **Lautaro Mir** (lautaromir07) para el tribunal ASIX2. El futuro del sysadmin es reactivo.*
+
