@@ -21,17 +21,22 @@ DB_NAME = "sigpau_mgmt"
 # ─── Helper: run shell command ────────────────────────────────────────────────
 def run(cmd, default="N/A"):
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=5)
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=8)
         return result.stdout.strip() or default
     except Exception:
         return default
+
+def run_ssh(ip, passwd, cmd, default="N/A"):
+    ssh_cmd = f"sshpass -p '{passwd}' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 root@{ip} \"{cmd}\""
+    return run(ssh_cmd, default)
 
 # ─── API: Estado SSSD ─────────────────────────────────────────────────────────
 @app.route("/api/sssd")
 def api_sssd():
     domains = {}
     for domain in ["sigpau.lab", "sigpau.local"]:
-        out = run(f"sssctl domain-status {domain} 2>&1")
+        # SSSD corre en el Cliente Debian (10.120.17.247)
+        out = run_ssh("10.120.17.247", "Asdqwe123", f"sssctl domain-status {domain} 2>&1")
         online = "Online" in out and "Offline" not in out
         domains[domain] = {"online": online, "raw": out}
     return jsonify(domains)
@@ -39,7 +44,8 @@ def api_sssd():
 # ─── API: Usuarios en sesión ──────────────────────────────────────────────────
 @app.route("/api/users")
 def api_users():
-    who_out = run("who")
+    # Who en el cliente Debian (donde se loguean los usuarios LDAP)
+    who_out = run_ssh("10.120.17.247", "Asdqwe123", "who")
     users = []
     for line in who_out.splitlines():
         parts = line.split()
@@ -49,15 +55,17 @@ def api_users():
                 "tty": parts[1],
                 "time": " ".join(parts[2:4]) if len(parts) >= 4 else parts[2]
             })
-    total_ldap = run("getent passwd | grep -c 'nas_profiles\\|/home' || echo '0'")
+    # Total en Samba AD
+    total_ldap = run("samba-tool user list 2>/dev/null | wc -l || getent passwd | wc -l")
     return jsonify({"active_sessions": users, "total_domain_users": total_ldap.strip()})
 
 # ─── API: Estado RAID ─────────────────────────────────────────────────────────
 @app.route("/api/raid")
 def api_raid():
-    mdstat = run("cat /proc/mdstat 2>/dev/null || echo 'No RAID'")
-    detail = run("mdadm --detail /dev/md0 2>&1 | grep -E 'State|Active|Degraded|Rebuild|UUID' | head -6")
-    espacio = run("df -h /home 2>/dev/null | tail -1")
+    # El RAID está en el NAS (10.1.100.17)
+    mdstat = run_ssh("10.1.100.17", "Asdqwe123456789.", "cat /proc/mdstat 2>/dev/null || echo 'No RAID'")
+    detail = run_ssh("10.1.100.17", "Asdqwe123456789.", "mdadm --detail /dev/md0 2>&1 | grep -E 'State|Active|Degraded|Rebuild|UUID' | head -6")
+    espacio = run_ssh("10.1.100.17", "Asdqwe123456789.", "df -h /home 2>/dev/null | tail -1")
     # Parse estado
     estado = "Activo"
     if "degraded" in mdstat.lower():
@@ -92,8 +100,8 @@ def api_system():
     hostname = run("hostname -f")
     uptime = run("uptime -p")
     ip_ad = run("ip -4 addr show | grep 'inet 10' | awk '{print $2}' | head -3")
-    samba = run("systemctl is-active samba-ad-dc 2>/dev/null || systemctl is-active smbd 2>/dev/null")
-    kerberos_ticket = run("klist 2>&1 | grep 'Default principal' || echo 'Sin ticket'")
+    samba = run("systemctl is-active samba-ad-dc 2>/dev/null || systemctl is-active samba 2>/dev/null || systemctl is-active smbd 2>/dev/null")
+    kerberos_ticket = run("klist -k 2>&1 | grep 'Default principal' || echo 'Sin ticket'")
     ldap_port = run("ss -tlnp | grep ':389 ' | awk '{print $4}'")
     return jsonify({
         "hostname": hostname,
