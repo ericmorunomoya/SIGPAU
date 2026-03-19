@@ -1,30 +1,39 @@
 #!/bin/bash
-# Script de backup de perfiles móviles al NAS con log en MariaDB
+set -euo pipefail
 
+NAS_IP="10.1.100.17"
 NAS_MOUNT="/mnt/nas_backups"
-SOURCE_DIR="/home/ldap-users/"
-DB_HOST="10.120.22.207"
-DB_USER="root"
-DB_PASS="Asdqwe123"
-DB_NAME="management"
-
-# 1. Asegurar montaje del NAS
-if ! mountpoint -q "$NAS_MOUNT"; then
-    mount -t cifs //10.1.100.17/RAID5 "$NAS_MOUNT" -o username=lautaro,password=Asdqwe123456789,uid=0,gid=0
-fi
-
-# 2. Ejecutar Rsync
+NAS_DEST="$NAS_MOUNT/profiles_ldap"
+SOURCE="/home/ldap-users/"
+LOG="/var/log/backup_profiles_nas.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-RSYNC_OUT=$(rsync -avz --delete "$SOURCE_DIR" "$NAS_MOUNT/profiles_backup/" 2>&1)
-EXIT_CODE=$?
+STATUS="OK"
+ERROR_MSG=""
 
-# 3. Registrar resultado en MariaDB
-if [ $EXIT_CODE -eq 0 ]; then
-    STATUS="OK"
-    ERROR_MSG=""
-else
-    STATUS="ERROR"
-    ERROR_MSG=$(echo "$RSYNC_OUT" | tail -n 1)
+echo "[$TIMESTAMP] === Iniciando backup de perfiles al NAS (vía NFS) ===" >> "$LOG"
+
+# Asegurar que el NAS esté montado vía NFS
+if ! mountpoint -q "$NAS_MOUNT"; then
+    mount -t nfs "$NAS_IP:/export/backups_ldap" "$NAS_MOUNT" 2>> "$LOG" || {
+        echo "[$TIMESTAMP] ERROR: No se pudo montar el NAS vía NFS." >> "$LOG"
+        STATUS="ERROR"
+        ERROR_MSG="NFS mount failed"
+    }
 fi
 
-mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "INSERT INTO backup_log (timestamp, source, destination, status, error_message, type) VALUES ('$TIMESTAMP', 'sigpau01', 'NAS-RAID5', '$STATUS', '$ERROR_MSG', 'User Profiles');"
+if [ "$STATUS" = "$OK" ] || [ "$STATUS" = "OK" ]; then
+    mkdir -p "$NAS_DEST"
+    rsync -avz --delete "$SOURCE" "$NAS_DEST/" >> "$LOG" 2>&1
+    if [ $? -eq 0 ]; then
+        echo "[$TIMESTAMP] Backup completado exitosamente." >> "$LOG"
+    else
+        echo "[$TIMESTAMP] ERROR durante rsync." >> "$LOG"
+        STATUS="ERROR"
+        ERROR_MSG="rsync failed"
+    fi
+fi
+
+# Registrar en MariaDB
+mysql -h 10.120.22.207 -u admin01 -pAsdqwe123 management -e "INSERT INTO backup_log (timestamp, source, destination, status, error_message, type) VALUES ('$TIMESTAMP', 'sigpau01:$SOURCE', 'NAS:$NAS_DEST', '$STATUS', '$ERROR_MSG', 'profile_sync');" 2>> "$LOG" || echo "[$TIMESTAMP] WARN: No se pudo registrar en MariaDB" >> "$LOG"
+
+echo "[$TIMESTAMP] === Backup finalizado: $STATUS ===" >> "$LOG"

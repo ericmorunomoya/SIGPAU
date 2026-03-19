@@ -10,6 +10,7 @@ Este repositorio contiene la configuración completa y documentada para desplega
 - **RAID 5 en NAS:** Almacenamiento redundante con 4 discos (2.7 TB útiles) para los homes.
 - **Auditoría de Backups:** Scripts automatizados con registro en base de datos MariaDB.
 - **Seguridad:** Configuración de SIDs unificados y permisos avanzados (Sticky Bit).
+- **Control Center:** Panel web interactivo End-to-End con métricas en vivo y reportes en PDF.
 
 ## 📂 Estructura del Proyecto
 - `conf/samba/`: Configuración de Samba (smb.conf).
@@ -18,6 +19,7 @@ Este repositorio contiene la configuración completa y documentada para desplega
 - `conf/mariadb/`: Configuración de MariaDB.
 - `deploy/`: Archivos LDIF y scripts para el despliegue inicial.
 - `docs/`: Guías detalladas paso a paso.
+- `panel/`: **SIGPAU Control Center** (Dashboard web Flask).
 - `scripts/`: Herramientas de mantenimiento y backups.
 
 ## 🖥️ Arquitectura

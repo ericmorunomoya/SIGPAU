@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGPAU Control Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a1a;
+      --surface: #111128;
+      --surface2: #1a1a38;
+      --border: #2a2a5a;
+      --accent: #7c3aed;
+      --accent2: #a78bfa;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      background: linear-gradient(135deg, #1a1a38 0%, #0f0f2a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3em;
+      box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    }
+    .header h1 { font-size: 1.15em; font-weight: 600; letter-spacing: 0.5px; }
+    .header h1 span { color: var(--accent2); }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--green);
+      font-size: 0.75em; font-weight: 600;
+      padding: 5px 12px; border-radius: 20px;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      background: var(--green); border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+    .btn-export {
+      background: linear-gradient(135deg, var(--accent), #5b21b6);
+      color: white; border: none; padding: 9px 20px;
+      border-radius: 8px; cursor: pointer; font-size: 0.85em; font-weight: 600;
+      display: flex; align-items: center; gap: 7px;
+      transition: all 0.2s; box-shadow: 0 0 15px rgba(124,58,237,0.3);
+    }
+    .btn-export:hover { transform: translateY(-1px); box-shadow: 0 0 25px rgba(124,58,237,0.5); }
+    .btn-export:active { transform: translateY(0); }
+
+    /* ─── Layout ─── */
+    .main { padding: 24px 30px; }
+
+    /* ─── KPI Strip ─── */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex; gap: 14px; align-items: center;
+      transition: border-color 0.3s;
+    }
+    .kpi:hover { border-color: var(--accent); }
+    .kpi-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3em; flex-shrink: 0;
+    }
+    .kpi-icon.purple { background: rgba(124,58,237,0.2); }
+    .kpi-icon.green  { background: rgba(16,185,129,0.2); }
+    .kpi-icon.blue   { background: rgba(59,130,246,0.2); }
+    .kpi-icon.orange { background: rgba(245,158,11,0.2); }
+    .kpi-label { font-size: 0.72em; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .kpi-value { font-size: 1.5em; font-weight: 700; line-height: 1; }
+
+    /* ─── Grid Cards ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .card:hover { border-color: rgba(124,58,237,0.5); }
+    .card-header {
+      padding: 14px 20px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.8em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--accent2);
+    }
+    .card-body { padding: 18px 20px; }
+
+    /* ─── Tablas ─── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.83em; }
+    th {
+      color: var(--muted); font-weight: 600; font-size: 0.75em;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 0 10px 10px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ─── Badges / Pills ─── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.78em; font-weight: 600;
+    }
+    .pill.green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .pill.red   { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .pill.blue  { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .pill.gray  { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+
+    /* ─── System info ─── */
+    .sys-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.85em;
+    }
+    .sys-row:last-child { border-bottom: none; }
+    .sys-row label { color: var(--muted); font-weight: 500; }
+
+    /* ─── RAID gauge ─── */
+    .raid-estado {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.1em; font-weight: 700; margin-bottom: 12px;
+    }
+    .raid-estado .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.red   { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+
+    pre.code-block {
+      background: #07071a;
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+      font-size: 0.76em; overflow-x: auto;
+      white-space: pre-wrap; word-break: break-all;
+      color: #a0aec0; max-height: 130px; overflow-y: auto;
+    }
+
+    /* ─── Loading ─── */
+    .loading { color: var(--muted); font-size: 0.85em; text-align: center; padding: 20px; }
+    .spin { display: inline-block; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Timestamp ─── */
+    .last-update { font-size: 0.72em; color: var(--muted); text-align: right; margin-top: 10px; }
+
+    /* ─── Full-width card ─── */
+    .card-full { grid-column: 1 / -1; }
+
+    /* ─── Notif toast ─── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--surface2); border: 1px solid var(--accent);
+      color: var(--text); padding: 14px 20px; border-radius: 10px;
+      font-size: 0.85em; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: none; z-index: 999;
+      animation: slideIn 0.3s ease;
+    }
+    .toast.show { display: block; }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">🛡️</div>
+    <div>
+      <h1>SIGPAU <span>Control Center</span></h1>
+      <div style="font-size:0.72em;color:var(--muted);margin-top:2px">Infraestructura ASIX2 — Monitorización en tiempo real</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><span class="live-dot"></span> EN VIVO</div>
+    <button class="btn-export" onclick="exportarInforme()">
+      📄 Exportar Informe
+    </button>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-icon purple">🖥️</div>
+      <div>
+        <div class="kpi-label">Servidor AD</div>
+        <div class="kpi-value" id="kpi-samba" style="font-size:1em;margin-top:2px">—</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon green">👥</div>
+      <div>
+        <div class="kpi-label">Sesiones Activas</div>
+        <div class="kpi-value" id="kpi-sessions">—</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon blue">💾</div>
+      <div>
+        <div class="kpi-label">RAID 5</div>
+        <div class="kpi-value" id="kpi-raid" style="font-size:1em;margin-top:2px">—</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon orange">📦</div>
+      <div>
+        <div class="kpi-label">Último Backup</div>
+        <div class="kpi-value" id="kpi-backup" style="font-size:0.75em;margin-top:4px;line-height:1.3">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 1: Sistema + SSSD -->
+  <div class="grid">
+
+    <!-- Sistema -->
+    <div class="card">
+      <div class="card-header">🖥️ Sistema & Samba AD</div>
+      <div class="card-body" id="sys-body">
+        <div class="loading"><span class="spin">⏳</span> Cargando...</div>
+      </div>
+    </div>
+
+    <!-- SSSD -->
+    <div class="card">
+      <div class="card-header">🔐 Autenticación SSSD</div>
+      <div class="card-body" id="sssd-body">
+        <div class="loading"><span class="spin">⏳</span> Cargando...</div>
+      </div>
+    </div>
+
+    <!-- RAID -->
+    <div class="card">
+      <div class="card-header">💽 Estado RAID 5 NAS</div>
+      <div class="card-body" id="raid-body">
+        <div class="loading"><span class="spin">⏳</span> Cargando...</div>
+      </div>
+    </div>
+
+    <!-- Sesiones -->
+    <div class="card">
+      <div class="card-header">👥 Sesiones de Usuario Activas</div>
+      <div class="card-body" id="users-body">
+        <div class="loading"><span class="spin">⏳</span> Cargando...</div>
+      </div>
+    </div>
+
+    <!-- Backups (full width) -->
+    <div class="card card-full">
+      <div class="card-header">📦 Histórico de Copias de Seguridad (LDAP → MariaDB)</div>
+      <div class="card-body" id="backup-body">
+        <div class="loading"><span class="spin">⏳</span> Cargando...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="last-update" id="last-update">Última actualización: —</div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Descargando informe...</div>
+
+<script>
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function pill(text, type) {
+    return `<span class="pill ${type}">${text}</span>`;
+  }
+
+  function fmt(d) {
+    return d || '<span style="color:var(--muted)">N/A</span>';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Fetch + render ─────────────────────────────────────────────────────────
+  async function fetchSys() {
+    try {
+      const r = await fetch('/api/system');
+      const d = await r.json();
+      const active = d.samba_status === 'active';
+      document.getElementById('kpi-samba').innerHTML =
+        active ? pill('● ACTIVE', 'green') : pill('● INACTIVO', 'red');
+
+      document.getElementById('sys-body').innerHTML = `
+        <div class="sys-row"><label>Hostname</label><span>${fmt(d.hostname)}</span></div>
+        <div class="sys-row"><label>IPs</label><span style="font-size:0.82em">${fmt(d.ips)}</span></div>
+        <div class="sys-row"><label>Uptime</label><span>${fmt(d.uptime)}</span></div>
+        <div class="sys-row"><label>Samba AD</label><span>${active ? pill('● Activo','green') : pill('● Inactivo','red')}</span></div>
+        <div class="sys-row"><label>Puerto LDAP</label><span>${fmt(d.ldap_port)}</span></div>
+        <div class="sys-row"><label>Kerberos</label><span style="font-size:0.8em">${fmt(d.kerberos)}</span></div>
+      `;
+    } catch(e) { document.getElementById('sys-body').innerHTML = '<div class="loading" style="color:#f87171">Error de conexión</div>'; }
+  }
+
+  async function fetchSSSD() {
+    try {
+      const r = await fetch('/api/sssd');
+      const d = await r.json();
+      let html = '<table><tr><th>Dominio</th><th>Estado</th><th>Tipo</th></tr>';
+      const types = {'sigpau.lab':'Active Directory','sigpau.local':'OpenLDAP'};
+      for (const [dom, info] of Object.entries(d)) {
+        const st = info.online ? pill('● Online','green') : pill('● Offline','red');
+        html += `<tr><td><b>${dom}</b></td><td>${st}</td><td>${pill(types[dom]||'LDAP','blue')}</td></tr>`;
+      }
+      html += '</table>';
+      document.getElementById('sssd-body').innerHTML = html;
+    } catch(e) { document.getElementById('sssd-body').innerHTML = '<div class="loading" style="color:#f87171">Error de conexión</div>'; }
+  }
+
+  async function fetchUsers() {
+    try {
+      const r = await fetch('/api/users');
+      const d = await r.json();
+      document.getElementById('kpi-sessions').textContent = d.active_sessions.length;
+      let html = '<table><tr><th>Usuario</th><th>Terminal</th><th>Desde</th></tr>';
+      if (d.active_sessions.length === 0) {
+        html += '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:16px">Sin sesiones activas</td></tr>';
+      } else {
+        for (const u of d.active_sessions) {
+          html += `<tr><td>👤 <b>${u.user}</b></td><td>${pill(u.tty,'gray')}</td><td>${u.time}</td></tr>`;
+        }
+      }
+      html += '</table>';
+      document.getElementById('users-body').innerHTML = html;
+    } catch(e) { document.getElementById('users-body').innerHTML = '<div class="loading" style="color:#f87171">Error</div>'; }
+  }
+
+  async function fetchRAID() {
+    try {
+      const r = await fetch('/api/raid');
+      const d = await r.json();
+      const ok = d.estado === 'Activo';
+      document.getElementById('kpi-raid').innerHTML = ok ? pill('● Activo','green') : pill('● '+d.estado,'red');
+      document.getElementById('raid-body').innerHTML = `
+        <div class="raid-estado">
+          <div class="dot ${ok?'green':'red'}"></div>
+          <span>${d.estado}</span>
+        </div>
+        <div class="sys-row"><label>Espacio /home</label><span style="color:var(--green);font-weight:600">${fmt(d.espacio)}</span></div>
+        <div style="margin-top:12px;font-size:0.75em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">/proc/mdstat</div>
+        <pre class="code-block">${d.mdstat || 'Sin datos RAID'}</pre>
+      `;
+    } catch(e) { document.getElementById('raid-body').innerHTML = '<div class="loading" style="color:#f87171">Error</div>'; }
+  }
+
+  async function fetchBackups() {
+    try {
+      const r = await fetch('/api/backups');
+      const d = await r.json();
+      const backups = d.backups || [];
+      if (backups.length > 0) {
+        const last = backups[0];
+        const ok = last.estado === 'EXITOSO';
+        document.getElementById('kpi-backup').innerHTML = `${ok?'✅':'❌'} ${last.estado}<br><span style="color:var(--muted)">${last.fecha}</span>`;
+      } else {
+        document.getElementById('kpi-backup').innerHTML = `<span style="color:var(--muted)">Sin datos</span>`;
+      }
+      let html = '<table><tr><th>Fecha</th><th>Archivo</th><th>Destino</th><th>Estado</th></tr>';
+      if (backups.length === 0) {
+        html += '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Sin registros de backup disponibles</td></tr>';
+      } else {
+        for (const b of backups) {
+          const ok = b.estado === 'EXITOSO';
+          html += `<tr>
+            <td style="color:var(--muted)">${b.fecha}</td>
+            <td><code style="font-size:0.85em">${b.archivo}</code></td>
+            <td>${b.destino}</td>
+            <td>${ok ? pill('✓ EXITOSO','green') : pill('✗ FALLIDO','red')}</td>
+          </tr>`;
+        }
+      }
+      html += '</table>';
+      document.getElementById('backup-body').innerHTML = html;
+    } catch(e) { document.getElementById('backup-body').innerHTML = '<div class="loading" style="color:#f87171">Error</div>'; }
+  }
+
+  // ── Exportar informe ────────────────────────────────────────────────────────
+  function exportarInforme() {
+    showToast('📄 Generando informe... un momento');
+    const a = document.createElement('a');
+    a.href = '/api/informe';
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => showToast('✅ Informe descargado correctamente'), 1200);
+  }
+
+  // ── Refresh loop ────────────────────────────────────────────────────────────
+  function updateAll() {
+    fetchSys();
+    fetchSSSD();
+    fetchUsers();
+    fetchRAID();
+    fetchBackups();
+    const now = new Date().toLocaleTimeString('es-ES');
+    document.getElementById('last-update').textContent = `Última actualización: ${now}`;
+  }
+
+  updateAll();
+  setInterval(updateAll, 10000); // Cada 10 segundos
+</script>
+</body>
+</html>
