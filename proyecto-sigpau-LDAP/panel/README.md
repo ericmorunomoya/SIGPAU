@@ -13,7 +13,7 @@ No es solo un panel; es la demostración técnica de la integración End-to-End 
 
 ---
 
-## ✨ Características WOW (Tribunal Edition)
+## ✨ PANEL DE CONTROL SIGPAU
 
 | Funcionalidad | Descripción |
 | :--- | :--- |
