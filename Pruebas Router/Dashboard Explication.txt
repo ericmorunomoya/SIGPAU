@@ -1,13 +1,13 @@
 Como arrancar el monitorizador de el router y Levantador de Router de backup
 
  - Entramos en la carpeta donde esta montado el Docker Compose
-	- C:\Users\ericm\OneDrive\Escritorio\MANAGERS ABILIDADES	\monitor-Docker
+	- C:\Users\ericm\OneDrive\Escritorio\MANAGERS ABILIDADES\monitor-Docker
 	- Dentro de esta abrimos un terminal
 
  - Seguidamente levantamos el Docker compose
 	- docker-compose up -d
 
- - Después de esto levantamos el contenedor donde esta montado el     Levantador de Router de Backup
+ - Después de esto levantamos el contenedor donde esta montado el Levantador de Router de Backup
 	- docker-compose up -d --build failover-ui
 
  - Después de esto para entrar por interfaz grafica entraremos con los siguientes links
