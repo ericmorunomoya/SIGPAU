@@ -30,7 +30,8 @@ Para detalles técnicos sobre IPs, roles y métodos de acceso, consulte el docum
 ## 🛠️ Guía de Uso de Soluciones
 1.  **Actualización TLS**: Ejecutar `./security_fixes/update_sigpau_tls.sh` en el servidor maestro.
 2.  **Despliegue de Logs**: Ejecutar `docker-compose up -d` en el directorio `growth_solutions/`. El panel de Grafana estará accesible en el puerto **4500**.
-3.  **Auditoría con Ansible**: Ejecutar `ansible-playbook -i hosts.ini hardening.yml` desde la estación de gestión.
+3.  **Dashboards Chulos**: Puedes importar el archivo `growth_solutions/dashboard_loki.json` en Grafana para tener las gráficas de actividad listas al instante.
+4.  **Auditoría con Ansible**: Ejecutar `ansible-playbook -i hosts.ini hardening.yml` desde la estación de gestión.
 
 ---
 **Autores**: Pau Gamez, Eric Moruno y Lautaro Mir.  

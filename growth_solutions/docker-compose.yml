@@ -1,13 +1,19 @@
-version: "3"
+version: '3'
 
 networks:
   loki:
+
+volumes:
+  grafana-data:
+  loki-data:
 
 services:
   loki:
     image: grafana/loki:2.9.0
     ports:
-      - "3100:3100"
+      - '3100:3100'
+    volumes:
+      - loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - loki
@@ -16,6 +22,7 @@ services:
     image: grafana/promtail:2.9.0
     volumes:
       - /var/log:/var/log
+      - ./promtail-config.yml:/etc/promtail/config.yml
     command: -config.file=/etc/promtail/config.yml
     networks:
       - loki
@@ -23,8 +30,10 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "4500:3000"
+      - '4500:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
       - loki
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=Asdqwe123  # Cambiar en producción
+      - GF_SECURITY_ADMIN_PASSWORD=Asdqwe123
