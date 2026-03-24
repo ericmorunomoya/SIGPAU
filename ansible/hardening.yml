@@ -1,0 +1,32 @@
+---
+- name: Hardening y Actualización Global SIGPAU
+  hosts: all
+  become: yes
+  tasks:
+    - name: Verificar conectividad ICMP
+      ping:
+
+    - name: Actualizar repositorios APT
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Instalar herramientas de red básicas
+      apt:
+        name:
+          - nmap
+          - curl
+          - net-tools
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Copiar Certificado CA de SIGPAU a todos los nodos
+      copy:
+        src: ../../ssl/sigpau-ca.crt
+        dest: /usr/local/share/ca-certificates/sigpau-ca.crt
+        mode: '0644'
+      ignore_errors: yes
+
+    - name: Actualizar almacén de certificados
+      command: update-ca-certificates
+      ignore_errors: yes
