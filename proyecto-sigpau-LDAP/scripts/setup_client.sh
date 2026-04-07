@@ -13,7 +13,11 @@ echo ">>> Purgando dependencias conflictivas (libpam-mount)..."
 apt-get remove --purge -y libpam-mount
 
 echo ">>> Configurando NSLCD (Failover entre nodos LDAP)..."
-cat > /etc/nslcd.conf << 'EOF'
+# Recuperamos la credencial desde vault
+VAULT_BIND_PW=$(vault kv get -field=password secret/sigpau/ldap)
+
+# Usamos EOF sin comillas para evaluar la variable
+cat > /etc/nslcd.conf << EOF
 threads 8
 uid nslcd
 gid nslcd
@@ -21,7 +25,7 @@ uri ldap://10.120.17.242
 uri ldap://10.120.22.207
 base dc=sigpau,dc=local
 binddn cn=admin,dc=sigpau,dc=local
-bindpw Asdqwe123
+bindpw $VAULT_BIND_PW
 scope sub
 EOF
 

@@ -15,7 +15,10 @@ app = Flask(__name__)
 # ─── Config ──────────────────────────────────────────────────────────────────
 DB_HOST = "10.120.22.207"
 DB_USER = "admin01"
-DB_PASS = "Sigpau2026*"
+# Integración de Vault:
+DB_PASS = os.popen("vault kv get -field=password secret/sigpau/db").read().strip() or "Sigpau2026*"
+SSH_PASS = os.popen("vault kv get -field=password secret/sigpau/ssh").read().strip() or "Asdqwe123"
+NAS_PASS = os.popen("vault kv get -field=password secret/sigpau/nas").read().strip() or "Asdqwe123456789."
 DB_NAME = "sigpau_mgmt"
 
 # ─── Helper: run shell command ────────────────────────────────────────────────
@@ -36,7 +39,7 @@ def api_sssd():
     domains = {}
     for domain in ["sigpau.lab", "sigpau.local"]:
         # SSSD corre en el Cliente Debian (10.120.17.247)
-        out = run_ssh("10.120.17.247", "Asdqwe123", f"sssctl domain-status {domain} 2>&1")
+        out = run_ssh("10.120.17.247", SSH_PASS, f"sssctl domain-status {domain} 2>&1")
         online = "Online" in out and "Offline" not in out
         domains[domain] = {"online": online, "raw": out}
     return jsonify(domains)
@@ -45,7 +48,7 @@ def api_sssd():
 @app.route("/api/users")
 def api_users():
     # Who en el cliente Debian (donde se loguean los usuarios LDAP)
-    who_out = run_ssh("10.120.17.247", "Asdqwe123", "who")
+    who_out = run_ssh("10.120.17.247", SSH_PASS, "who")
     users = []
     for line in who_out.splitlines():
         parts = line.split()
@@ -63,9 +66,9 @@ def api_users():
 @app.route("/api/raid")
 def api_raid():
     # El RAID está en el NAS (10.1.100.17)
-    mdstat = run_ssh("10.1.100.17", "Asdqwe123456789.", "cat /proc/mdstat 2>/dev/null || echo 'No RAID'")
-    detail = run_ssh("10.1.100.17", "Asdqwe123456789.", "mdadm --detail /dev/md0 2>&1 | grep -E 'State|Active|Degraded|Rebuild|UUID' | head -6")
-    espacio = run_ssh("10.1.100.17", "Asdqwe123456789.", "df -h /home 2>/dev/null | tail -1")
+    mdstat = run_ssh("10.1.100.17", NAS_PASS, "cat /proc/mdstat 2>/dev/null || echo 'No RAID'")
+    detail = run_ssh("10.1.100.17", NAS_PASS, "mdadm --detail /dev/md0 2>&1 | grep -E 'State|Active|Degraded|Rebuild|UUID' | head -6")
+    espacio = run_ssh("10.1.100.17", NAS_PASS, "df -h /home 2>/dev/null | tail -1")
     # Parse estado
     estado = "Activo"
     if "degraded" in mdstat.lower():

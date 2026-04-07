@@ -14,7 +14,7 @@ STATUS_MSG="OK"
 # Base de datos sigpau02
 DB_HOST="10.120.22.207"
 DB_USER="admin01"
-DB_PASS="Asdqwe123"
+DB_PASS=$(vault kv get -field=password secret/sigpau/db)
 DB_NAME="sigpau_mgmt"
 
 echo "[$TIMESTAMP] === Iniciando backup LDAP al NAS ===" >> "$LOG"

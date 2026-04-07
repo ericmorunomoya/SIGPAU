@@ -1,0 +1,64 @@
+version: "3.8"
+
+# ============================================================
+# HashiCorp Vault — Gestión de Secretos SIGPAU
+# Reemplaza las credenciales en texto plano de scripts y configs.
+# Levanta con: docker compose up -d
+# ============================================================
+
+networks:
+  vault-net:
+    driver: bridge
+
+volumes:
+  vault-data:
+  vault-logs:
+
+services:
+  vault:
+    image: hashicorp/vault:1.15
+    container_name: sigpau-vault
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "sigpau-root-token"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-data:/vault/data
+      - vault-logs:/vault/logs
+      - ./vault-config.hcl:/vault/config/vault.hcl
+    command: vault server -dev
+    networks:
+      - vault-net
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  vault-init:
+    image: hashicorp/vault:1.15
+    container_name: sigpau-vault-init
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: "http://vault:8200"
+      VAULT_TOKEN: "sigpau-root-token"
+    entrypoint: /bin/sh -c |
+      sleep 5 &&
+      vault secrets enable -path=sigpau kv-v2 &&
+      vault kv put secret/sigpau/db       password="$$DB_PASS" &&
+      vault kv put secret/sigpau/ldap     password="$$LDAP_ADMIN_PASS" &&
+      vault kv put secret/sigpau/ssh      password="$$SSH_PASS" &&
+      vault kv put secret/sigpau/nas      password="$$NAS_SMB_PASS" &&
+      vault kv put secret/sigpau/grafana  password="$$GRAFANA_PASS" &&
+      echo "✅ Secretos de SIGPAU cargados en Vault"
+    env_file:
+      - .env
+    networks:
+      - vault-net

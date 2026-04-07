@@ -33,7 +33,8 @@ if [ "$STATUS" = "$OK" ] || [ "$STATUS" = "OK" ]; then
     fi
 fi
 
-# Registrar en MariaDB
-mysql -h 10.120.22.207 -u admin01 -pAsdqwe123 management -e "INSERT INTO backup_log (timestamp, source, destination, status, error_message, type) VALUES ('$TIMESTAMP', 'sigpau01:$SOURCE', 'NAS:$NAS_DEST', '$STATUS', '$ERROR_MSG', 'profile_sync');" 2>> "$LOG" || echo "[$TIMESTAMP] WARN: No se pudo registrar en MariaDB" >> "$LOG"
+# Registrar en MariaDB usando Vault
+DB_PASS=$(vault kv get -field=password secret/sigpau/db)
+mysql -h 10.120.22.207 -u admin01 -p"$DB_PASS" management -e "INSERT INTO backup_log (timestamp, source, destination, status, error_message, type) VALUES ('$TIMESTAMP', 'sigpau01:$SOURCE', 'NAS:$NAS_DEST', '$STATUS', '$ERROR_MSG', 'profile_sync');" 2>> "$LOG" || echo "[$TIMESTAMP] WARN: No se pudo registrar en MariaDB" >> "$LOG"
 
 echo "[$TIMESTAMP] === Backup finalizado: $STATUS ===" >> "$LOG"

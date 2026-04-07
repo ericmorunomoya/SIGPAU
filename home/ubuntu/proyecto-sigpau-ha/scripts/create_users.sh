@@ -2,7 +2,8 @@
 # Script para crear usuarios en LDAP y vincularlos con Samba
 
 ADMIN_DN="cn=admin,dc=sigpau,dc=local"
-ADMIN_PW="Asdqwe123" # ¡ADVERTENCIA: Cambiar en producción!
+ADMIN_PW=$(vault kv get -field=password secret/sigpau/ldap)
+
 
 # Crear Unidad Organizativa 'people' si no existe
 ldapadd -x -D "$ADMIN_DN" -w "$ADMIN_PW" <<LDIF
@@ -59,13 +60,15 @@ LDIF
     (echo "$PASSWORD"; echo "$PASSWORD") | pdbedit -a -u $UID
 }
 
+USER_PW=$(vault kv get -field=password secret/sigpau/default_user)
+
 # Añadir usuarios
-add_user lautaro ApellidoLautaro Lautaro 10001 10000 Asdqwe123
-add_user pau ApellidoPau Pau 10002 10000 Asdqwe123
-add_user eric ApellidoEric Eric 10003 10000 Asdqwe123
-add_user josemota Mota JoseMota 10004 10000 Asdqwe123
-add_user pablomotos Motos PabloMotos 10005 10000 Asdqwe123
-add_user matiasprats Prats MatiasPrats 10006 10000 Asdqwe123
+add_user lautaro ApellidoLautaro Lautaro 10001 10000 "$USER_PW"
+add_user pau ApellidoPau Pau 10002 10000 "$USER_PW"
+add_user eric ApellidoEric Eric 10003 10000 "$USER_PW"
+add_user josemota Mota JoseMota 10004 10000 "$USER_PW"
+add_user pablomotos Motos PabloMotos 10005 10000 "$USER_PW"
+add_user matiasprats Prats MatiasPrats 10006 10000 "$USER_PW"
 
 # Añadir Lautaro, Pau y Eric al grupo de administradores
 ldapmodify -x -D "$ADMIN_DN" -w "$ADMIN_PW" <<LDIF
