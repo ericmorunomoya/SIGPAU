@@ -3,11 +3,11 @@
 En respuesta a las observaciones de seguridad, se han implementado y documentado las siguientes mejoras para garantizar el correcto aislamiento y protección del entorno:
 
 ## 1. Política de contraseñas diferenciadas por servicio
-Se ha abandonado el uso de la contraseña compartida (`Asdqwe123`) para todos los servicios de la demo. La nueva política establece credenciales únicas y robustas por servicio para evitar movimientos laterales en caso de compromiso:
-- **LDAP:** `Ldap@Pass123!` (Actualizado en los scripts de despliegue y réplica `create_users.sh`, `02-setup-n2.sh` y `02-ldap-consumer.ldif`).
-- **SSH:** `Ssh@Pass123!`
-- **Zabbix:** `Zabbix@Pass123!`
-- **Router (OpenWRT):** `Router@Pass123!`
+Se ha abandonado el uso de la contraseña compartida (`<CONTRASEÑA_COMPARTIDA>`) para todos los servicios de la demo. La nueva política establece credenciales únicas y robustas por servicio para evitar movimientos laterales en caso de compromiso:
+- **LDAP:** `<LDAP_ADMIN_PASSWORD>` (Actualizado en los scripts de despliegue y réplica `create_users.sh`, `02-setup-n2.sh` y `02-ldap-consumer.ldif`).
+- **SSH:** `<SSH_ROOT_PASSWORD>`
+- **Zabbix:** `<ZABBIX_ADMIN_PASSWORD>`
+- **Router (OpenWRT):** `<ROUTER_ADMIN_PASSWORD>`
 
 ## 2. Autenticación Multifactor (MFA) para accesos críticos
 Para añadir una capa adicional de protección a los servicios críticos, se requiere la implementación de Autenticación Multifactor (MFA):
