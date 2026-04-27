@@ -147,13 +147,13 @@ config rule
 	option proto 'tcp'
 	option dest_port '80'
 	option name 'ADMIN'
-	option src '*'
+	option src 'LAN20'
 
 config rule
 	option target 'ACCEPT'
 	option dest_port '22'
 	option name 'SSH'
-	option src '*'
+	option src 'LAN20'
 	option proto 'tcp udp'
 
 config rule

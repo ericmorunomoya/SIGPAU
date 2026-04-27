@@ -14,7 +14,7 @@ cat <<LDIF | ldapmodify -Y EXTERNAL -H ldapi:///
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcSyncrepl
-olcSyncrepl: {0}rid=001\n  provider=ldap://10.120.17.242:389\n  type=refreshAndPersist\n  retry=\"5 5 300 +\"\n  searchbase=\"dc=sigpau,dc=local\"\n  bindmethod=simple\n  binddn=\"cn=admin,dc=sigpau,dc=local\"\n  credentials=Asdqwe123
+olcSyncrepl: {0}rid=001\n  provider=ldap://10.120.17.242:389\n  type=refreshAndPersist\n  retry=\"5 5 300 +\"\n  searchbase=\"dc=sigpau,dc=local\"\n  bindmethod=simple\n  binddn=\"cn=admin,dc=sigpau,dc=local\"\n  credentials=Ldap@Pass123!
 LDIF
 
 # 3. Activar MirrorMode
