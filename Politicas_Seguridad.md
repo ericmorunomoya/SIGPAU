@@ -5,7 +5,9 @@ En respuesta a las observaciones de seguridad, se han implementado y documentado
 ## 1. Política de contraseñas diferenciadas por servicio
 Se ha abandonado el uso de la contraseña compartida (`<CONTRASEÑA_COMPARTIDA>`) para todos los servicios de la demo. La nueva política establece credenciales únicas y robustas por servicio para evitar movimientos laterales en caso de compromiso:
 - **LDAP:** `<LDAP_ADMIN_PASSWORD>` (Actualizado en los scripts de despliegue y réplica `create_users.sh`, `02-setup-n2.sh` y `02-ldap-consumer.ldif`).
-- **SSH:** `<SSH_ROOT_PASSWORD>`
+- **SSH (LDAP Master 10.120.22.207):** `<SSH_LDAP_MASTER_PASSWORD>`
+- **SSH (LDAP Slave 10.120.17.242):** `<SSH_LDAP_SLAVE_PASSWORD>`
+- **SSH (NAS 10.1.100.17):** `<SSH_NAS_PASSWORD>`
 - **Zabbix:** `<ZABBIX_ADMIN_PASSWORD>`
 - **Router (OpenWRT):** `<ROUTER_ADMIN_PASSWORD>`
 
