@@ -6,14 +6,13 @@ config defaults
 	option forward 'ACCEPT'
 
 config zone
-	option input 'REJECT'
 	option output 'ACCEPT'
-	option forward 'REJECT'
 	option masq '1'
 	option mtu_fix '1'
 	option name 'WAN'
-	list network 'WAN'
-	list network 'LAN100'
+	option network 'WAN LAN100'
+	option input 'ACCEPT'
+	option forward 'ACCEPT'
 
 config rule
 	option name 'Allow-DHCP-Renew'
@@ -183,7 +182,6 @@ config rule
 	option dest '*'
 
 config rule
-	option enabled '1'
 	option target 'ACCEPT'
 	option dest_port '389'
 	option name 'ldap2'
@@ -191,4 +189,70 @@ config rule
 	option dest_ip '10.120.22.207'
 	option proto 'tcp'
 	option dest 'LAN20'
+
+config rule
+	option name 'Allow-PC-to-LAN'
+	option src 'WAN'
+	option dest '*'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-NFS'
+	option src 'WAN'
+	option dest_port '2049 111'
+	option proto 'tcp udp'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Trust-Client'
+	option src 'WAN'
+	option src_ip '10.1.105.121'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-Samba'
+	option src '*'
+	option proto 'tcp udp'
+	option dest_port '137 138 139 445'
+	option target 'ACCEPT'
+
+config zone
+	option name 'vpn'
+	option input 'ACCEPT'
+	option forward 'ACCEPT'
+	option output 'ACCEPT'
+	option network 'vpn'
+	option masq '1'
+	option mtu_fix '1'
+
+config rule
+	option target 'ACCEPT'
+	option name 'Allow-WG-Inbound'
+	option proto 'udp'
+	option src 'WAN'
+	option dest_port '51820'
+
+config zone 'vpn'
+	option name 'vpn'
+	option input 'ACCEPT'
+	option forward 'ACCEPT'
+	option output 'ACCEPT'
+	option masq '1'
+	list network 'vpn'
+	option mtu_fix '1'
+
+config rule
+	option name 'Allow-WG-Local-Traffic'
+	option src 'lan'
+	option dest_port '51820'
+	option proto 'udp'
+	option target 'ACCEPT'
+
+config forwarding
+	option dest 'WAN'
+	option src 'vpn'
+
+config forwarding
+	option dest 'vpn'
+	option src 'WAN'
 
