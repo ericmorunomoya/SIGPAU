@@ -6,12 +6,10 @@
 ## 1. Identificación y Remediación de Contraseñas Harcodeadas
 Durante la revisión del repositorio se detectaron contraseñas en texto plano, tanto para cuentas maestras de infraestructura (LDAP, SSH, bases de datos) como en scripts de despliegue. 
 - **Acción:** Se han eliminado por completo las contraseñas escritas en texto plano (`Asdqwe123`, así como la clave intermedia utilizada en la actualización) de **todos los archivos** del repositorio.
-- **Archivos saneanizados:**
-  - `home/ubuntu/proyecto-sigpau-ha/scripts/create_users.sh`
-  - `home/ubuntu/proyecto-sigpau-ha/deploy/02-setup-n2.sh`
-  - `home/ubuntu/proyecto-sigpau-ha/deploy/02-ldap-consumer.ldif`
+- **Archivos saneanizados/revisados:**
   - `Auditorias/Reporte_Auditoria_Pentesting.html`
   - `Politicas_Seguridad.md`
+  - *(Se eliminó la carpeta duplicada/incorrecta `home/` del repositorio, conservando únicamente la ruta correcta en `proyecto-sigpau-LDAP` que ya operaba de forma segura).*
 - **Sustitución:** En su lugar se han implementado marcadores de posición (`<LDAP_ADMIN_PASSWORD>`, `<CONTRASEÑA_OCULTA>`, etc.) indicando que las variables deben ser proporcionadas a través de entornos seguros, bóvedas de claves (Key Vaults) o variables de entorno en el entorno productivo real.
 
 ## 2. Aplicación en Servidores "En Vivo" (Producción / Maquetas)
